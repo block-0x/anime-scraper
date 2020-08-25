@@ -44,10 +44,6 @@ class YoutubeChannelVideoScraper(object):
         self.channel_list_mean_views_csv_drop_duplicate()
         self.channel_list_update_csv_file_copy_and_drop_duplicate_channel_list_mean_views_csv_file()
         self.channel_list_mean_views_csv_drop_duplicate()
-        self.channel_list_csv_copy_as_channel_list_mean_views_csv()
-        self.channel_list_csv_drop_duplicate()
-        
-        self.channel_list_update_csv_drop_duplicate()
         self.new_dir()
         self.scrape_at_filter()
         '''
@@ -63,20 +59,27 @@ class YoutubeChannelVideoScraper(object):
     def channel_list_csv_drop_duplicate_and_copy_as_channel_list_mean_views_csv_file(self):
         channel_list_csv_df = pd.read_csv(self.channel_list_csv_file_path, engine='python')
         channel_list_csv_df_drop_duplicate = channel_list_csv_df.drop_duplicates(subset='channel_url', keep='last')
-        pd.DataFrame(channel_list_csv_df_drop_duplicate).to_csv(self.channel_list_mean_views_csv_file_path, mode='a', header=False, index=False)
+        if 0 is os.path.getsize(self.channel_list_mean_views_csv_file_path):
+            pd.DataFrame(channel_list_csv_df_drop_duplicate).to_csv(self.channel_list_mean_views_csv_file_path, header=True, index=False)
+        else:
+            pd.DataFrame(channel_list_csv_df_drop_duplicate).to_csv(self.channel_list_mean_views_csv_file_path, mode='a', header=False, index=False)
         print("listの重複を削除してmeanに追加コピーしました")
 
 
     def channel_list_mean_views_csv_drop_duplicate(self):
         channel_list_mean_views_csv_df = pd.read_csv(self.channel_list_mean_views_csv_file_path, engine='python')
         channel_list_mean_views_csv_df_drop_duplicate = channel_list_mean_views_csv_df.drop_duplicates(subset='channel_url', keep='last')
+        pd.DataFrame(channel_list_mean_views_csv_df_drop_duplicate).to_csv(self.channel_list_mean_views_csv_file_path,index=False)
         print("meanの重複削除したデータをしました")
 
 
     def channel_list_update_csv_file_copy_and_drop_duplicate_channel_list_mean_views_csv_file(self):
-        channel_list_csv_update_df = pd.read_csv(self.channel_list_update_csv_file_path, engine='python')
-        pd.DataFrame(channel_list_csv_update_df).to_csv(self.channel_list_mean_views_csv_file_path, mode='a', header=False, index=False)
-        print("updateをmeanに追加コピーしました")
+        if not 0 is os.path.getsize(self.channel_list_update_csv_file_path):
+            channel_list_csv_update_df = pd.read_csv(self.channel_list_update_csv_file_path, engine='python')
+            pd.DataFrame(channel_list_csv_update_df).to_csv(self.channel_list_mean_views_csv_file_path, mode='a', header=False, index=False)
+            print("updateをmeanに追加コピーしました")
+        else:
+            print("updateは空です")
 
 
     def new_dir(self):
@@ -90,7 +93,7 @@ class YoutubeChannelVideoScraper(object):
 
 
     def scrape_at_filter(self):
-        self.df = pd.read_csv(self.channel_list_csv_file_path, engine='python')
+        self.df = pd.read_csv(self.channel_list_mean_views_csv_file_path, engine='python')
         self.df_scrape_at_this_month = self.df[self.df['scrape_at'] == dt.datetime(2020,8,21).strftime("%Y/%m/%d")]
         channel_url_data = self.df_scrape_at_this_month.set_index('channel_url')
         channel_urls_ndarray = channel_url_data.index.values
@@ -106,7 +109,7 @@ class YoutubeChannelVideoScraper(object):
     all data udpate
     '''
     def read_channel_urls(self):
-        channel_url_data = pd.read_csv(self.channel_list_csv_file_path, index_col='channel_url', engine='python')
+        channel_url_data = pd.read_csv(self.channel_list_mean_views_csv_file_path, index_col='channel_url', engine='python')
         channel_urls_ndarray = channel_url_data.index.values
         channel_urls = channel_urls_ndarray.tolist()
         for i in channel_urls:

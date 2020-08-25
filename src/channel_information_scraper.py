@@ -22,6 +22,8 @@ class YoutubeChannelInformationScraper(object):
         self.channel_about_urls = []
         self.channel_list_update_csv_file_name = "./../data/channel/youtube_channel_list_update"
         self.channel_list_csv_update_file_path = os.path.join(os.getcwd(), self.channel_list_update_csv_file_name+'.csv')
+        self.channel_list_mean_views_csv_file_name = "./../data/channel/youtube_channel_list_mean_views"
+        self.channel_list_mean_views_csv_file_path = os.path.join(os.getcwd(), self.channel_list_mean_views_csv_file_name+'.csv')
         '''
         scraper JapaneWebScraper
         '''
@@ -30,6 +32,8 @@ class YoutubeChannelInformationScraper(object):
 
     def run(self):
         self.drop_channel_list_duplicate()
+        self.channel_list_mean_views_csv_drop_duplicate_and_copy_as_channel_list_csv_update_file()
+        self.drop_channel_list_duplicate_first()
         self.scrape_at_filter()
         '''
         All data update
@@ -42,6 +46,23 @@ class YoutubeChannelInformationScraper(object):
     def drop_channel_list_duplicate(self):
         df = pd.read_csv(self.channel_list_csv_update_file_path, engine='python')
         df_drop_duplicate = df.drop_duplicates(subset='channel_url', keep='last')
+        pd.DataFrame(df_drop_duplicate).to_csv(self.channel_list_csv_update_file_path,index=False)
+        print(self.channel_list_csv_update_file_path+"の重複削除しました")
+
+
+    def channel_list_mean_views_csv_drop_duplicate_and_copy_as_channel_list_csv_update_file(self):
+        channel_list_mean_views_csv_df = pd.read_csv(self.channel_list_mean_views_csv_file_path, engine='python')
+        channel_list_mean_views_csv_df_drop_duplicate = channel_list_mean_views_csv_df.drop_duplicates(subset='channel_url', keep='last')
+        if not 0 is os.path.getsize(self.channel_list_mean_views_csv_file_path):
+            pd.DataFrame(channel_list_mean_views_csv_df_drop_duplicate).to_csv(self.channel_list_csv_update_file_path, header=True, index=False)
+        else:
+            pd.DataFrame(channel_list_mean_views_csv_df_drop_duplicate).to_csv(self.channel_list_csv_update_file_path, mode='a', header=False, index=False)
+        print("meanの重複を削除してupdateに追加コピーしました")
+
+
+    def drop_channel_list_duplicate_first(self):
+        df = pd.read_csv(self.channel_list_csv_update_file_path, engine='python')
+        df_drop_duplicate = df.drop_duplicates(subset='channel_url', keep='first')
         pd.DataFrame(df_drop_duplicate).to_csv(self.channel_list_csv_update_file_path,index=False)
         print(self.channel_list_csv_update_file_path+"の重複削除しました")
 
