@@ -44,10 +44,13 @@ class YoutubeChannelInformationScraper(object):
 
 
     def drop_channel_list_duplicate(self):
-        df = pd.read_csv(self.channel_list_csv_update_file_path, engine='python')
-        df_drop_duplicate = df.drop_duplicates(subset='channel_url', keep='last')
-        pd.DataFrame(df_drop_duplicate).to_csv(self.channel_list_csv_update_file_path,index=False)
-        print(self.channel_list_csv_update_file_path+"の重複削除しました")
+        if not 0 is os.path.getsize(self.channel_list_csv_update_file_path):
+            df = pd.read_csv(self.channel_list_csv_update_file_path, engine='python')
+            df_drop_duplicate = df.drop_duplicates(subset='channel_url', keep='last')
+            pd.DataFrame(df_drop_duplicate).to_csv(self.channel_list_csv_update_file_path,index=False)
+            print(self.channel_list_csv_update_file_path+"の重複削除しました")
+        else:
+            print(self.channel_list_csv_update_file_path+"は空でした")
 
 
     def channel_list_mean_views_csv_drop_duplicate_and_copy_as_channel_list_csv_update_file(self):
