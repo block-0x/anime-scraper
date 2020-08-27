@@ -210,7 +210,7 @@ class ChannelCountryAndScraper(object):
             print(self.create_ats)
             self.true_column['create_at'] = "エラー"
         except ValueError:
-            print(self.channel_length)
+            print(self.create_ats)
             self.true_column['create_at'] = "エラー"
         try:
             self.true_column['tag'] = self.tag_str
