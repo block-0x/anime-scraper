@@ -94,7 +94,7 @@ class YoutubeChannelVideoScraper(object):
 
     def scrape_at_filter(self):
         self.df = pd.read_csv(self.channel_list_mean_views_csv_file_path, engine='python')
-        self.df_scrape_at_this_month = self.df[self.df['scrape_at'] == dt.datetime(2020,8,21).strftime("%Y/%m/%d")]
+        self.df_scrape_at_this_month = self.df[self.df['scrape_at'] > dt.datetime(2020,8,10).strftime("%Y/%m/%d")]
         channel_url_data = self.df_scrape_at_this_month.set_index('channel_url')
         channel_urls_ndarray = channel_url_data.index.values
         channel_urls = channel_urls_ndarray.tolist()

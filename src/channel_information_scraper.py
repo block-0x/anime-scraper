@@ -102,7 +102,7 @@ class YoutubeChannelInformationScraper(object):
     def get_page_source(self):
         for i in self.channel_about_urls:
             html = requests.get('http://localhost:8050/render.html',
-            params={'url': i, 'wait': 2.5})
+            params={'url': i, 'wait': 3})
             self.soup = BeautifulSoup(html.text, "html.parser")
             print(i)
             self.channel_url = i
