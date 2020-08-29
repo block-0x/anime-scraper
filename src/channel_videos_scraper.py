@@ -200,7 +200,10 @@ class YoutubeChannelVideoScraper(object):
         else:
             channel_subscriber_replace = channel_subscriber_rstrip.replace(' ', '')
             channel_subscriber_sub = re.sub("\\D", "", str(channel_subscriber_replace))
-            channel_subscriber_material = int(channel_subscriber_sub)
+            try:
+                channel_subscriber_material = int(channel_subscriber_sub)
+            except ValueError:
+                channel_subscriber_material = 'エラー'
         for i in soup.find_all("a"):
             title = (i.get("title"))
             url = (i.get("href"))
